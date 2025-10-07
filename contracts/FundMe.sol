@@ -58,4 +58,12 @@ contract FundMe {
        require(msg.sender==owner,"this function con only be called by owner");
        payable(msg.sender).transfer(address(this).balance);
     }
+
+    function refund() external  {
+        require( coverEthToUsd(address(this).balance) < TARGET,"Target is  reached");
+        uint256 amount= fundersToAmount[msg.sender];
+        require( amount==0,"There is no fund for you");
+        payable(msg.sender).transfer(amount);
+        fundersToAmount[msg.sender]=0;
+    }
 }
