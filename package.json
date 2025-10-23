@@ -1,0 +1,27 @@
+{
+  "name": "remixproject",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/ab562/SolidityStudy#readme",
+  "bugs": {
+    "url": "https://github.com/ab562/SolidityStudy/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ab562/SolidityStudy.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.2"
+  }
+}
