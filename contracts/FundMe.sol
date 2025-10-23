@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 
 pragma solidity >=0.8.2 <0.9.0;
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
@@ -14,11 +14,14 @@ contract FundMe {
     mapping(address=>uint) public fundersToAmount;
     uint256 min_value=1*10**18;
     uint256 constant TARGET =10*10**18;
+    address erc20Addr;
     AggregatorV3Interface internal dataFeed;
     uint256 deploymentTimestamp;
     // 锁定时长
     uint256 lockTime;
     address public owner;
+
+    bool public getFundSuccess=false;
     
     constructor(uint256  _lockTime) {
         dataFeed = AggregatorV3Interface(
@@ -53,17 +56,18 @@ contract FundMe {
         uint256 ethPrice = uint256(getChainlinkDataFeedLatestAnswer());
         return ethPrice * ethAmount/(10**8);
     }
-    function transferOwnership(address newOwner) public onluOwner {
+    function transferOwnership(address newOwner) public onlyOwner {
     
         owner=newOwner;
     }
 
-    function getFund() external windowClose onluOwner {
+    function getFund() external windowClose onlyOwner {
        
         // 当前合约地址
        require( coverEthToUsd(address(this).balance) >=TARGET,"Target is not reached");
       
        payable(msg.sender).transfer(address(this).balance);
+       getFundSuccess=true;
     }
 
     function refund() external windowClose {
@@ -73,12 +77,21 @@ contract FundMe {
         payable(msg.sender).transfer(amount);
         fundersToAmount[msg.sender]=0;
     }
+    function setFuncerToAmount(address funder,uint256 amountToUpdate) external  {
+        require(msg.sender==erc20Addr,"only erc20 contract can call this function");
+        fundersToAmount[funder]=amountToUpdate;
+    }
+
+    function setErc20Address(address _erc20Address) public onlyOwner{
+        erc20Addr=_erc20Address;     
+    }
+
     modifier windowClose (){
          require(block.timestamp >deploymentTimestamp+lockTime,"window is no closed");
          _;
     }
 
-       modifier onluOwner (){
+       modifier onlyOwner (){
          require(msg.sender==owner,"this function con only be called by owner");
          _;
     }
